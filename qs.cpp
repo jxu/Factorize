@@ -6,10 +6,11 @@
 // The optimal smoothness bound is exp((0.5 + o(1)) * sqrt(log(n)*log(log(n)))).
 #define SMOOTH_BOUND 50
 #define TRIAL_BOUND 100000
-#define SIEVE_CHUNK 60
+#define SIEVE_CHUNK 100
 
 
 typedef std::vector<int> int_vector;
+typedef std::vector<int_vector> matrix;
 typedef std::vector<mpz_class> mpz_vector;
 
 
@@ -64,9 +65,7 @@ int_vector eratosthenes(int bound)
     for(int i=0; i<bound; i++)
     {
         if (A[i])
-        {
             primes.push_back(i);
-        }
     }
     return primes;
 }
@@ -74,12 +73,10 @@ int_vector eratosthenes(int bound)
 // Return a vector of a number's factors (ex. [0, 1, 2, 0]) and a boolean of
 // whether it's smooth or not
 typedef std::pair<int_vector, bool> vb_pair;
-
 vb_pair factor_smooth(mpz_class n, mpz_vector factor_base)
 {
     // Each item in factors corresponds to number in factor base
     int_vector factors(factor_base.size(), 0);
-    bool is_smooth = false;
 
     for(unsigned int i=0; i<factor_base.size(); i++)
     {
@@ -92,10 +89,7 @@ vb_pair factor_smooth(mpz_class n, mpz_vector factor_base)
             factors[i] = (factors[i]+1) % 2; // mod 2 matrices
         }
     }
-    if (n==1)
-    {
-        is_smooth = true;
-    }
+    bool is_smooth = (n==1);
     vb_pair return_pair(factors, is_smooth);
     return return_pair;
 }
@@ -104,11 +98,9 @@ vb_pair factor_smooth(mpz_class n, mpz_vector factor_base)
 
 int main()
 {
-
     const mpz_class n = 90283;
 
     int_vector primes = eratosthenes(TRIAL_BOUND);
-
     mpz_vector factor_base;
 
     // Create factor base
@@ -124,15 +116,14 @@ int main()
         mpz_class p_mpz = p;
         if (mpz_legendre(n.get_mpz_t(), p_mpz.get_mpz_t()) == 1)
         {
-            //print_mpz_class(p);
             factor_base.push_back(p);
         }
     }
-
+    print_mpz_vector(factor_base);
 
     // Find smooth numbers
     mpz_vector smooth_numbers;
-    std::vector <int_vector> smooth_number_factors; // Corresponds to smooth numbers
+    matrix smooth_factors; // Corresponds to smooth numbers
 
     mpz_class j = 1; // x = sqrt(n) + j
     mpz_class sqrt_n = sqrt(n);
@@ -162,27 +153,71 @@ int main()
     //vb_pair z = factor_smooth(test, factor_base);
     //gmp_printf("%d\n", z.second);
 
-
+    // Actual factoring
     for(unsigned int i=0; i<current_chunk.size(); i++)
     {
         vb_pair factored = factor_smooth(current_chunk[i], factor_base);
         if (factored.second) // Is smooth
         {
             smooth_numbers.push_back(current_chunk[i]);
-            smooth_number_factors.push_back(factored.first);
+            smooth_factors.push_back(factored.first);
         }
     }
+    // Resize to factor_base+1 size
+    smooth_numbers.resize(factor_base.size()+1);
+    smooth_factors.resize(factor_base.size()+1);
+
 
     print_mpz_vector(smooth_numbers);
-    for(int i=0; i<smooth_number_factors.size(); i++)
+
+    //for(unsigned int i=0; i<smooth_factors.size(); i++)
+    //{
+        //print_int_vector(smooth_factors[i]);
+    //}
+    gmp_printf("\n");
+
+    // Gaussian Elimination
+    // Transpose the matrix
+    int Ai = smooth_factors[0].size(); // row
+    int Aj = smooth_factors.size(); // column
+    matrix A(Ai, int_vector(Aj, 0));
+
+    for(int i=0; i<Ai; i++)
+        {
+            for(int j=0; j<Aj; j++)
+            {
+                A[i][j] = smooth_factors[j][i];
+            }
+        }
+
+
+    //for(unsigned int i=0; i<A.size(); i++)
+    //{
+        //print_int_vector(A[i]);
+    //}
+
+    for(int k=0; k<Ai; k++)
     {
-        print_int_vector(smooth_number_factors[i]);
+        bool free_column = false;
+        // Swap with pivot if current diagonal is 0
+        if (A[k][k] == 0)
+        {
+
+            //for(int l=k; l<Aj; l++)
+            //{
+                //if (A[l][k]==1)
+                    //A[l].swap(A[k]);
+
+            //}
+        }
+        A[k][k] = 2;
     }
 
 
-
-
-
+    for(unsigned int i=0; i<A.size(); i++)
+    {
+        print_int_vector(A[i]);
+    }
 
 
 
