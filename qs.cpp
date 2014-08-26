@@ -74,12 +74,11 @@ vb_pair factor_smooth(mpz_class n, mpz_vector factor_base)
     for(size_t i=0; i<factor_base.size(); i++)
     {
         mpz_class factor = factor_base[i];
-        // print_mpz_class(factor);
 
         while (n % factor == 0)
         {
             n /= factor;
-            factors[i] = (factors[i]+1) % 2; // mod 2 matrices
+            factors[i] ^= 1; // + 1 mod 2 matrices
         }
     }
     bool is_smooth = (n==1);
@@ -113,8 +112,7 @@ int main()
     print_mpz_vector(factor_base);
 
     // Find smooth numbers
-    mpz_vector smooth_numbers;
-    matrix smooth_factors; // Corresponds to smooth numbers
+
 
     mpz_class j = 1; // x = sqrt(n) + j
     mpz_class sqrt_n = sqrt(n);
@@ -122,22 +120,25 @@ int main()
     //while (smooth_numbers.size() < factor_base + 1)
     //{
         mpz_vector current_chunk(SIEVE_CHUNK);
+        mpz_vector current_offset(SIEVE_CHUNK);
         for(int i=0; i<SIEVE_CHUNK; i++)
         {
             mpz_class current;
             mpz_class offset = sqrt_n+j+i; // Current addition to x
-            // print_mpz_class(offset);
             // current = (j+i)^2 mod n
             mpz_powm_ui(current.get_mpz_t(), offset.get_mpz_t(), 2, n.get_mpz_t());
-            //print_mpz_class(current);
 
             current_chunk[i] = current;
+            current_offset[i] = offset;
 
         }
         // To do: add Shanks-Tonelli
         j += SIEVE_CHUNK;
     //}
 
+    mpz_vector smooth_numbers;
+    mpz_vector smooth_x;
+    matrix smooth_factors; // Corresponds to smooth numbers
 
 
     // Actual factoring
@@ -146,12 +147,13 @@ int main()
         vb_pair factored = factor_smooth(current_chunk[i], factor_base);
         if (factored.second) // Is smooth
         {
+            smooth_x.push_back(current_offset[i]);
             smooth_numbers.push_back(current_chunk[i]);
             smooth_factors.push_back(factored.first);
         }
     }
 
-
+    print_mpz_vector(smooth_x);
     //printf("%d\n", factor_base.size());
 
     // Resize to factor_base+1 size
@@ -209,9 +211,9 @@ int main()
             {
                 for(int j=0; j<Aj; j++)
                     A[i][j] ^= A[k][j];
-                for(size_t i=0; i<A.size(); i++)
-                    print_int_vector(A[i]);
-                std::cout << '\n';
+                //for(size_t i=0; i<A.size(); i++)
+                //   print_int_vector(A[i]);
+                //std::cout << '\n';
             }
         }
     }
@@ -240,28 +242,49 @@ int main()
     for(size_t i=0; i<A.size(); i++)
         print_int_vector(A[i]);
 
-    int_vector null_space(f, 0);
-    // Treat all free variables as 1
-    for(size_t i=0; i<null_space.size(); i++)
+    int_vector null_space(Aj, 0);
+    // First free variable is 1, rest are 0
+    null_space[f] = 1;
+
+    for(int i=0; i<f; i++)
     {
-        for(int j=f; j<Aj; j++)
-            null_space[i] ^= A[i][j];
+        if (A[i][f])
+            null_space[i] = 1;
     }
 
     std::cout << '\n';
     print_int_vector(null_space);
     print_mpz_vector(smooth_numbers);
 
-    mpz_class square = 1;
+    mpz_class x_square = 1;
+    mpz_class y_square = 1;
     for(size_t i=0; i<null_space.size(); i++)
         if (null_space[i])
-            square *= smooth_numbers[i];
+        {
+            x_square *= smooth_numbers[i];
+            y_square *= smooth_x[i] * smooth_x[i];
+        }
 
-    std::cout << square << std::endl;
-    mpz_class x, rem;
 
-    mpz_sqrtrem(x.get_mpz_t(), rem.get_mpz_t(), square.get_mpz_t());
-    std::cout << x << ", " << rem << std::endl;
+    std::cout << "Square: " << x_square << std::endl;
+    mpz_class x, y, rem;
+
+    mpz_sqrtrem(x.get_mpz_t(), rem.get_mpz_t(), x_square.get_mpz_t());
+    mpz_sqrt(y.get_mpz_t(), y_square.get_mpz_t());
+    if (rem == 0)
+        std::cout << "Success! ";
+    else
+        std::cout << "Failure! ";
+
+    std::cout << "x: " << x << '\n' << "y: " << y << "\n\n";
+
+    mpz_class factor_1;
+    mpz_class dif = y-x;
+    mpz_gcd(factor_1.get_mpz_t(), n.get_mpz_t(), dif.get_mpz_t());
+    mpz_class factor_2 = n / factor_1;
+
+    std::cout << "Factor 1: " << factor_1 << '\n';
+    std::cout << "Factor 2: " << factor_2 << '\n';
 
     return 0;
 }
