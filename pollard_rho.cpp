@@ -1,10 +1,10 @@
-#include <algorithm>
+#include <iostream>
 #include <gmpxx.h>
 
 #define MIN(a, b) ((a < b) ? a : b)
 
 // Euclid's algorithm
-// Based on Come On Code On's python code
+// Could also use GMP's implementation or binary GCD
 inline mpz_class gcd(mpz_class a, mpz_class b)
 {
     mpz_class c;
@@ -14,11 +14,10 @@ inline mpz_class gcd(mpz_class a, mpz_class b)
     }
     return b;
 }
-// Initialize random number generator
-gmp_randclass r(gmp_randinit_default);
-
+gmp_randclass r(gmp_randinit_default); // Initialize RNG
 
 // Pollard's rho using f(x) = x*x + c
+// Based on Come On Code On's python code
 mpz_class pollard_rho(mpz_class N)
 {
     if (N % 2 == 0)
@@ -44,7 +43,7 @@ mpz_class pollard_rho(mpz_class N)
 }
 
 // Brent's modification
-mpz_class pollard_brent_rho(mpz_class N)
+mpz_class brent(mpz_class N)
 {
     if (N % 2 == 0)
     {
@@ -81,14 +80,12 @@ mpz_class pollard_brent_rho(mpz_class N)
     }
     if (g==N)
     {
-        gmp_printf("hi \n");
         while (true)
         {
             ys = ((ys*ys)%N + c) % N;
             g = gcd(abs(x-ys), N);
             if (g>1)
                 break;
-
         }
     }
     return g;
@@ -96,10 +93,10 @@ mpz_class pollard_brent_rho(mpz_class N)
 
 int main()
 {
-    const mpz_class N("519920418481914614701");
-    mpz_class p = pollard_brent_rho(N);
+    const mpz_class N("1000000000100000000002379");
+    mpz_class p = brent(N);
     mpz_class q = N / p;
-    gmp_printf("%Zd\n%Zd", p.get_mpz_t(), q.get_mpz_t());
+    std::cout << p << '\n' << q << '\n';
 
     return 0;
 }

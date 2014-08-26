@@ -1,7 +1,7 @@
 #include <gmpxx.h>
 #include <vector>
 #include <cmath>
-#include <stdio.h>
+#include <iostream>
 
 // The optimal smoothness bound is exp((0.5 + o(1)) * sqrt(log(n)*log(log(n)))).
 #define SMOOTH_BOUND 50
@@ -14,15 +14,10 @@ typedef std::vector<int_vector> matrix;
 typedef std::vector<mpz_class> mpz_vector;
 
 
-// printf due to some version incompatibility
-void print_mpz_class(mpz_class x)
-{
-    gmp_printf("%Zd \n", x.get_mpz_t());
-}
-
+// Replace with iostream
 void print_mpz_vector(mpz_vector x)
 {
-    for(unsigned int i=0; i<x.size(); i++)
+    for(size_t i=0; i<x.size(); i++)
     {
         gmp_printf("%Zd, ", x[i].get_mpz_t());
     }
@@ -31,7 +26,7 @@ void print_mpz_vector(mpz_vector x)
 
 void print_int_vector(int_vector x)
 {
-    for(unsigned int i=0; i<x.size(); i++)
+    for(size_t i=0; i<x.size(); i++)
     {
         gmp_printf("%d, ", x[i]);
     }
@@ -56,9 +51,7 @@ int_vector eratosthenes(int bound)
         if (A[i])
         {
             for(int j = i*i; j<=bound; j+=i)
-            {
                 A[j] = 0;
-            }
         }
     }
 
@@ -78,7 +71,7 @@ vb_pair factor_smooth(mpz_class n, mpz_vector factor_base)
     // Each item in factors corresponds to number in factor base
     int_vector factors(factor_base.size(), 0);
 
-    for(unsigned int i=0; i<factor_base.size(); i++)
+    for(size_t i=0; i<factor_base.size(); i++)
     {
         mpz_class factor = factor_base[i];
         // print_mpz_class(factor);
@@ -95,7 +88,6 @@ vb_pair factor_smooth(mpz_class n, mpz_vector factor_base)
 }
 
 
-
 int main()
 {
     const mpz_class n = 90283;
@@ -106,14 +98,13 @@ int main()
     // Create factor base
     mpz_class two = 2;
     factor_base.push_back(two);
-    for(unsigned int i=0; i<primes.size(); i++)
+    for(size_t i=0; i<primes.size(); i++)
     {
         int p = primes[i];
         if (p > SMOOTH_BOUND) // Up to smooth limit
-        {
             break;
-        }
         mpz_class p_mpz = p;
+        // Use only primes that match (n|p) = 1
         if (mpz_legendre(n.get_mpz_t(), p_mpz.get_mpz_t()) == 1)
         {
             factor_base.push_back(p);
@@ -147,14 +138,10 @@ int main()
         j += SIEVE_CHUNK;
     //}
 
-    //printf("%d", factor_base.size());
 
-    //mpz_class test = 153;
-    //vb_pair z = factor_smooth(test, factor_base);
-    //gmp_printf("%d\n", z.second);
 
     // Actual factoring
-    for(unsigned int i=0; i<current_chunk.size(); i++)
+    for(size_t i=0; i<current_chunk.size(); i++)
     {
         vb_pair factored = factor_smooth(current_chunk[i], factor_base);
         if (factored.second) // Is smooth
@@ -163,17 +150,19 @@ int main()
             smooth_factors.push_back(factored.first);
         }
     }
+
+
+    //printf("%d\n", factor_base.size());
+
     // Resize to factor_base+1 size
     smooth_numbers.resize(factor_base.size()+1);
     smooth_factors.resize(factor_base.size()+1);
 
-
     print_mpz_vector(smooth_numbers);
 
-    //for(unsigned int i=0; i<smooth_factors.size(); i++)
-    //{
-        //print_int_vector(smooth_factors[i]);
-    //}
+    for(size_t i=0; i<smooth_factors.size(); i++)
+        print_int_vector(smooth_factors[i]);
+
     gmp_printf("\n");
 
     // Gaussian Elimination
@@ -190,44 +179,89 @@ int main()
             }
         }
 
+    for(size_t i=0; i<A.size(); i++)
+        print_int_vector(A[i]);
 
-    //for(unsigned int i=0; i<A.size(); i++)
-    //{
-        //print_int_vector(A[i]);
-    //}
+    std::cout << '\n';
 
     for(int k=0; k<Ai; k++)
     {
-        bool free_column = false;
+        //bool free_column = false; // Not sure if necessary
         // Swap with pivot if current diagonal is 0
         if (A[k][k] == 0)
         {
-
-            //for(int l=k; l<Aj; l++)
-            //{
-                //if (A[l][k]==1)
-                    //A[l].swap(A[k]);
-
-            //}
+            for(int l=k; l<Ai; l++)
+            {
+                if (A[l][k]==1)
+                {
+                    A[l].swap(A[k]);
+                    break;
+                }
+                // If there's no pivot
+                //free_column = true;
+            }
         }
-        A[k][k] = 2;
+        // For rows below pivot
+        for(int i=k+1; i<Ai; i++)
+        {
+            // If row can be subtracted, subtract every element (using xor)
+            if (A[i][k])
+            {
+                for(int j=0; j<Aj; j++)
+                    A[i][j] ^= A[k][j];
+                for(size_t i=0; i<A.size(); i++)
+                    print_int_vector(A[i]);
+                std::cout << '\n';
+            }
+        }
     }
 
 
-    for(unsigned int i=0; i<A.size(); i++)
+    // Find line between free and pivot variables
+    int f;
+    for(f=0; f<Aj; f++)
     {
-        print_int_vector(A[i]);
+        if (A[f][f] != 1)
+            break;
+    }
+    // Back substitution on upper triangular matrix
+    for(int k=f-1; k>=0; k--)
+    {
+        for(int i=k-1; i>=0; i--)
+        {
+            if (A[i][k])
+            {
+                for(int j=0; j<Aj; j++)
+                    A[i][j] ^= A[k][j];
+            }
+        }
     }
 
+    for(size_t i=0; i<A.size(); i++)
+        print_int_vector(A[i]);
 
+    int_vector null_space(f, 0);
+    // Treat all free variables as 1
+    for(size_t i=0; i<null_space.size(); i++)
+    {
+        for(int j=f; j<Aj; j++)
+            null_space[i] ^= A[i][j];
+    }
 
+    std::cout << '\n';
+    print_int_vector(null_space);
+    print_mpz_vector(smooth_numbers);
 
+    mpz_class square = 1;
+    for(size_t i=0; i<null_space.size(); i++)
+        if (null_space[i])
+            square *= smooth_numbers[i];
 
+    std::cout << square << std::endl;
+    mpz_class x, rem;
 
-
-
+    mpz_sqrtrem(x.get_mpz_t(), rem.get_mpz_t(), square.get_mpz_t());
+    std::cout << x << ", " << rem << std::endl;
 
     return 0;
 }
-
-
