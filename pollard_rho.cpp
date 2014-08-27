@@ -5,7 +5,7 @@
 
 // Euclid's algorithm
 // Could also use GMP's implementation or binary GCD
-inline mpz_class gcd(mpz_class a, mpz_class b)
+inline mpz_class euclid_gcd(mpz_class a, mpz_class b)
 {
     mpz_class c;
     while (a)
@@ -14,10 +14,24 @@ inline mpz_class gcd(mpz_class a, mpz_class b)
     }
     return b;
 }
+
+inline mpz_class gmp_gcd(mpz_class a, mpz_class b)
+{
+    mpz_class c;
+    mpz_gcd(c.get_mpz_t(), a.get_mpz_t(), b.get_mpz_t());
+    return c;
+}
+
+inline mpz_class func(mpz_class x, mpz_class c, mpz_class N)
+{
+    return ((x*x)%N + c) % N; // Using function f(x) = x*x + c
+}
+
 gmp_randclass r(gmp_randinit_default); // Initialize RNG
 
-// Pollard's rho using f(x) = x*x + c
-// Based on Come On Code On's python code
+
+
+// Pollard's rho, based on Come On Code On's python code
 mpz_class pollard_rho(mpz_class N)
 {
     if (N % 2 == 0)
@@ -34,13 +48,15 @@ mpz_class pollard_rho(mpz_class N)
 
     while (g==1)
     {
-        x = ((x*x)%N + c) % N;
-        y = ((y*y)%N + c) % N;
-        y = ((y*y)%N + c) % N;
-        g = gcd(abs(x-y), N);
+        x = func(x, c, N);
+        y = func(y, c, N);
+        y = func(y, c, N);
+        g = gmp_gcd(abs(x-y), N);
     }
     return g;
 }
+
+
 
 // Brent's modification
 mpz_class brent(mpz_class N)
@@ -62,7 +78,7 @@ mpz_class brent(mpz_class N)
         x = y;
         for(mpz_class i=0; i<z; i++)
         {
-            y = ((y*y)%N + c) % N;
+            y = func(y, c, N);
         }
         mpz_class k = 0;
         while (k<z && g==1)
@@ -70,10 +86,10 @@ mpz_class brent(mpz_class N)
             ys = y;
             for(mpz_class i=0; i<MIN(m, z-k); i++)
             {
-                y = ((y*y)%N + c) % N;
+                y = func(y, c, N);
                 q = q*(abs(x-y)) % N;
             }
-            g = gcd(q, N);
+            g = gmp_gcd(q, N);
             k += m;
         }
         z *= 2;
@@ -82,8 +98,8 @@ mpz_class brent(mpz_class N)
     {
         while (true)
         {
-            ys = ((ys*ys)%N + c) % N;
-            g = gcd(abs(x-ys), N);
+            ys = func(ys, c, N);
+            g = gmp_gcd(abs(x-ys), N);
             if (g>1)
                 break;
         }
@@ -93,8 +109,8 @@ mpz_class brent(mpz_class N)
 
 int main()
 {
-    const mpz_class N("1000000000100000000002379");
-    mpz_class p = brent(N);
+    const mpz_class N("10000000000009800000000002077");
+    mpz_class p = pollard_rho(N);
     mpz_class q = N / p;
     std::cout << p << '\n' << q << '\n';
 
