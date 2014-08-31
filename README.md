@@ -1,9 +1,16 @@
 Factorize
 =========
+Small quadratic sieve and other algorithm implementations using GMP for factoring. Not optimized.
 
-*Not done*
+Usage
+-----
+Currently you have to go into the code and adjust `n`, the number to factor. Some parameters can be fiddled with.
 
-Small quadratic sieve and other algorithm implementations for factoring. Not optimized.
+To do:
 
-Possible bugs:
-- Square smooth numbers
+- Profile code
+- Shanks-Tonelli algorithm
+- Entirely pre-allocate memory
+- Code refactoring (not factoring!)
+- Improve usage 
+

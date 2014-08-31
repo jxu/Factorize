@@ -3,8 +3,7 @@
 
 #define MIN(a, b) ((a < b) ? a : b)
 
-// Euclid's algorithm
-// Could also use GMP's implementation or binary GCD
+// Euclid's algorithm (much slower than GMP's built-in)
 inline mpz_class euclid_gcd(mpz_class a, mpz_class b)
 {
     mpz_class c;
@@ -15,14 +14,14 @@ inline mpz_class euclid_gcd(mpz_class a, mpz_class b)
     return b;
 }
 
-inline mpz_class gmp_gcd(mpz_class a, mpz_class b)
+inline mpz_class gmp_gcd(const mpz_class &a, const mpz_class &b)
 {
     mpz_class c;
     mpz_gcd(c.get_mpz_t(), a.get_mpz_t(), b.get_mpz_t());
     return c;
 }
 
-inline mpz_class func(mpz_class x, mpz_class c, mpz_class N)
+inline mpz_class func(const mpz_class &x, const mpz_class &c, const mpz_class &N)
 {
     return ((x*x)%N + c) % N; // Using function f(x) = x*x + c
 }
