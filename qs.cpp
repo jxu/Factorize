@@ -5,11 +5,11 @@
 
 // Constants
 // The optimal smoothness bound is exp((0.5 + o(1)) * sqrt(log(n)*log(log(n)))).
-const int SMOOTH_BOUND = 20000;
-const int TRIAL_BOUND = 100000;
-const int SIEVE_CHUNK = 60000;
+const int SMOOTH_BOUND = 500;
+const int TRIAL_BOUND = 400;
+const int SIEVE_CHUNK = 60;
 
-const bool DEBUG = false;
+const bool DEBUG = true;
 
 
 
@@ -79,7 +79,8 @@ vb_pair factor_smooth(mpz_class n, const mpz_vector &factor_base)
 
 int main()
 {
-    const mpz_class n("604681275307");
+    // Test numbers: 502560280658509, 90283
+    const mpz_class n("502560280658509");
 
     int_vector primes = eratosthenes(TRIAL_BOUND);
     mpz_vector factor_base;
@@ -256,14 +257,13 @@ int main()
 
 
     int_vector null_space(Aj, 0);
-    // Subject to change:
+    // Subject to change
     // First free variable is 1, rest are 0
     null_space[f] = 1;
 
     for(int i=0; i<f; i++)
-    {
             null_space[i] = A[i][f];
-    }
+
 
     mpz_class x_square = 1;
     mpz_class y = 1;
@@ -284,12 +284,11 @@ int main()
     mpz_class x, rem;
     mpz_sqrtrem(x.get_mpz_t(), rem.get_mpz_t(), x_square.get_mpz_t());
 
+
     if (DEBUG)
     {
-        if (rem == 0)
-            std::cout << "Success! ";
-        else
-            std::cout << "Failure! ";
+        if (rem==0)
+            std::cout << "Remainder 0\n";
 
         std::cout << "x: " << x << '\n' << "y: " << y << "\n\n";
     }
@@ -298,6 +297,9 @@ int main()
     mpz_class factor_1;
     mpz_class dif = y - x;
     mpz_gcd(factor_1.get_mpz_t(), n.get_mpz_t(), dif.get_mpz_t());
+    if (factor_1 == 1 || factor_1 == n)
+        std::cout << "Factoring failure: try again with different parameters\n";
+
     mpz_class factor_2 = n / factor_1;
 
     std::cout << "Factor 1: " << factor_1 << '\n';

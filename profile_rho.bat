@@ -1,0 +1,1 @@
+gprof pollard_rho.exe > pollard_rho_profile.txt
