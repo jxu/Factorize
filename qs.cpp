@@ -11,23 +11,30 @@ const int SIEVE_CHUNK = 60;
 
 const bool DEBUG = true;
 
-
+void *_Unwind_Resume;
+void *__gxx_personality_v0;
 
 typedef std::vector<int> int_vector;
 typedef std::vector<int_vector> matrix;
 typedef std::vector<mpz_class> mpz_vector;
 
+
 template <typename T> // Takes int_vector or mpz_vector
-void print_vector(const T &x)
+inline void print_vector(const T &x)
 {
-    for(size_t i=0; i<x.size(); i++)
-        std::cout << x[i] << ", ";
+    for(auto y : x)
+        std::cout << y << ", ";
 
     std::cout << '\n';
 }
 
+inline void print_matrix(const matrix &m)
+{
+    for (auto x : m)
+        print_vector(x);
+}
 
-// Sloppy coding
+
 // Return a list of primes
 int_vector eratosthenes(int bound)
 {
@@ -55,12 +62,8 @@ int_vector eratosthenes(int bound)
 
 // Return a vector of a number's factors (ex. [0, 1, 2, 0]) and a boolean of
 // whether it's smooth or not
-typedef std::pair<int_vector, bool> vb_pair;
-vb_pair factor_smooth(mpz_class n, const mpz_vector &factor_base)
+void factor_smooth(int_vector &factors, bool &is_smooth, mpz_class n, const mpz_vector &factor_base) // n copy
 {
-    // Each item in factors corresponds to number in factor base
-    int_vector factors(factor_base.size(), 0);
-
     for(size_t i=0; i<factor_base.size(); i++)
     {
         mpz_class factor = factor_base[i];
@@ -70,22 +73,12 @@ vb_pair factor_smooth(mpz_class n, const mpz_vector &factor_base)
             factors[i] ^= 1; // + 1 (mod 2) matrices
         }
     }
-    bool is_smooth = (n==1);
-    vb_pair return_pair(factors, is_smooth);
-    return return_pair;
+    is_smooth = (n==1);
 }
 
-// ------------------------------------------------
 
-int main()
+void create_factor_base(mpz_vector &factor_base, const int_vector &primes, const mpz_class &n)
 {
-    // Test numbers: 502560280658509, 90283
-    const mpz_class n("502560280658509");
-
-    int_vector primes = eratosthenes(TRIAL_BOUND);
-    mpz_vector factor_base;
-
-    // Create factor base
     mpz_class two = 2;
     factor_base.push_back(two);
     for(size_t i=0; i<primes.size(); i++)
@@ -96,9 +89,7 @@ int main()
         mpz_class p_mpz = p;
         // Use only primes that match (n|p) = 1
         if (mpz_legendre(n.get_mpz_t(), p_mpz.get_mpz_t()) == 1)
-        {
             factor_base.push_back(p);
-        }
     }
 
     if (DEBUG)
@@ -106,20 +97,16 @@ int main()
        std::cout << "Factor base: ";
        print_vector(factor_base);
     }
+}
 
 
-    // Find smooth numbers with x = sqrt(n) + j
-    mpz_class j = 1;
-    mpz_class sqrt_n = sqrt(n);
-
-    // Allocate factor_base+1 size
-    mpz_vector smooth_numbers(factor_base.size()+1, 0);
-    mpz_vector smooth_x(factor_base.size()+1, 0);
-
-    // Corresponds to smooth numbers
-    matrix smooth_factors(factor_base.size()+1, {0});
+void sieve(mpz_vector &smooth_numbers, mpz_vector &smooth_x, matrix &smooth_factors,
+           const mpz_class &n, const mpz_vector &factor_base)
+{
     int smooth_count = 0;
+    mpz_class sqrt_n = sqrt(n);
     bool not_done = true;
+    mpz_class j = 1;
 
     while (not_done) // pi(B) + 1
     {
@@ -141,22 +128,24 @@ int main()
         // Actual factoring
         for(size_t i=0; i<current_chunk.size(); i++)
         {
-            vb_pair factored = factor_smooth(current_chunk[i], factor_base);
-            if (factored.second) // Is smooth
+            // Each item in factors corresponds to number in factor base
+            int_vector factors(factor_base.size(), 0);
+            bool is_smooth;
+            factor_smooth(factors, is_smooth, current_chunk[i], factor_base);
+            if (is_smooth) // Is smooth
             {
-                if (smooth_count > factor_base.size())
+                if (smooth_count > int(factor_base.size()))
                 {
                     not_done = false;
                     break;
                 }
                 smooth_x[smooth_count] = current_x[i];
                 smooth_numbers[smooth_count] = current_chunk[i];
-                smooth_factors[smooth_count] = factored.first;
+                smooth_factors[smooth_count] = factors;
                 smooth_count++;
             }
         }
     }
-
 
     if (DEBUG)
     {
@@ -166,17 +155,18 @@ int main()
         print_vector(smooth_numbers);
 
         std::cout << "Smooth factors:\n";
-        for(size_t i=0; i<smooth_factors.size(); i++)
-            print_vector(smooth_factors[i]);
-
+        print_matrix(smooth_factors);
         std::cout << '\n';
     }
+}
 
 
-    // Gaussian Elimination -----------------------------------
-    // Transpose the matrix
+void gaussian_elimination(mpz_class &y, const matrix &smooth_factors,
+                          const mpz_vector &smooth_numbers, const mpz_vector &smooth_x, mpz_class &x)
+{
     int Ai = smooth_factors[0].size(); // row
     int Aj = smooth_factors.size(); // column
+
     matrix A(Ai, int_vector(Aj, 0));
 
     for(int i=0; i<Ai; i++)
@@ -190,10 +180,8 @@ int main()
     if (DEBUG)
     {
         std::cout << "Transposed matrix A:\n";
-        for(size_t i=0; i<A.size(); i++)
-            print_vector(A[i]);
-
-            std::cout << '\n';
+        print_matrix(A);
+        std::cout << '\n';
     }
 
     for(int k=0; k<Ai; k++)
@@ -249,9 +237,7 @@ int main()
     if (DEBUG)
     {
         std::cout << "Fully reduced matrix:\n";
-        for(size_t i=0; i<A.size(); i++)
-            print_vector(A[i]);
-
+        print_matrix(A);
         std::cout << '\n';
     }
 
@@ -266,7 +252,7 @@ int main()
 
 
     mpz_class x_square = 1;
-    mpz_class y = 1;
+    y = 1;
     for(size_t i=0; i<null_space.size(); i++)
         if (null_space[i])
         {
@@ -281,7 +267,7 @@ int main()
         std::cout << "Square: " << x_square << std::endl;
 
     }
-    mpz_class x, rem;
+    mpz_class rem;
     mpz_sqrtrem(x.get_mpz_t(), rem.get_mpz_t(), x_square.get_mpz_t());
 
 
@@ -292,8 +278,37 @@ int main()
 
         std::cout << "x: " << x << '\n' << "y: " << y << "\n\n";
     }
+}
 
 
+int main()
+{
+    // Test numbers: 502560280658509, 90283
+    const mpz_class n("502560280658509");
+
+    int_vector primes = eratosthenes(TRIAL_BOUND);
+
+    mpz_vector factor_base;
+    create_factor_base(factor_base, primes, n);
+
+
+    // Find smooth numbers with x = sqrt(n) + j
+    // Allocate factor_base+1 size
+    mpz_vector smooth_numbers(factor_base.size()+1, 0);
+    mpz_vector smooth_x(factor_base.size()+1, 0);
+    // Corresponds to smooth numbers
+    matrix smooth_factors(factor_base.size()+1, {0});
+
+    sieve(smooth_numbers, smooth_x, smooth_factors, n, factor_base);
+
+
+    // Gaussian Elimination -----------------------------------
+    // Transpose the matrix
+    mpz_class y, x;
+
+    gaussian_elimination(y, smooth_factors, smooth_numbers, smooth_x, x);
+
+    // Final division
     mpz_class factor_1;
     mpz_class dif = y - x;
     mpz_gcd(factor_1.get_mpz_t(), n.get_mpz_t(), dif.get_mpz_t());

@@ -3,36 +3,33 @@ Flat profile:
 Each sample counts as 0.01 seconds.
   %   cumulative   self              self     total           
  time   seconds   seconds    calls  Ts/call  Ts/call  name    
- 17.57      0.78     0.78                             __gmpn_tdiv_qr
- 13.74      1.39     0.61                             __gmpn_sbpi1_div_qr
-  7.43      1.72     0.33                             __gmpn_copyi
-  6.98      2.03     0.31                             __gmpn_submul_1
-  6.31      2.31     0.28                             __gmpn_lshift
-  5.18      2.54     0.23                             __gmpz_mul
-  4.73      2.75     0.21                             __gmpn_sqr_basecase
-  4.05      2.93     0.18                             __gmpz_tdiv_r
-  4.05      3.11     0.18                             _fu3___ZSt4cout
-  3.83      3.28     0.17                             __gmpz_sub
-  3.60      3.44     0.16                             __chkstk_ms
-  3.38      3.59     0.15                             __gmpn_rshift
-  2.48      3.70     0.11                             __gmpz_add
-  2.25      3.80     0.10                             __gmpn_add_n
-  2.25      3.90     0.10                             __gmpz_add_ui
-  2.25      4.00     0.10                             __gmpz_clear
-  1.58      4.07     0.07                             __gmpn_mul_basecase
-  1.35      4.13     0.06                             __gmpz_init_set
-  1.13      4.18     0.05                             __gmp_default_allocate
-  1.13      4.23     0.05                             __gmpz_realloc
-  0.90      4.27     0.04                             __gmpn_sub_n
-  0.90      4.31     0.04                             __gmpz_init
-  0.68      4.34     0.03                             __gmp_default_free
-  0.68      4.37     0.03                             __gmpz_cmp
-  0.45      4.39     0.02                             __gmp_default_reallocate
-  0.45      4.41     0.02                             __gmpn_sqr
-  0.45      4.43     0.02                             free
-  0.23      4.44     0.01                             __gmpn_mul
-  0.00      4.44     0.00        1     0.00     0.00  brent(__gmp_expr<__mpz_struct [1], __mpz_struct [1]> const&)
-  0.00      4.44     0.00        1     0.00     0.00  __gmp_expr<__mpz_struct [1], __mpz_struct [1]>::__gmp_expr(char const*, int)
+ 18.78      0.46     0.46                             __gmpn_tdiv_qr
+ 17.14      0.88     0.42                             __gmpn_sbpi1_div_qr
+ 10.20      1.13     0.25                             __gmpn_copyi
+  7.76      1.32     0.19                             __gmpz_tdiv_r
+  5.31      1.45     0.13                             __gmpn_lshift
+  4.90      1.57     0.12                             __gmpn_submul_1
+  4.49      1.68     0.11                             _fu3___ZSt4cout
+  3.67      1.77     0.09                             __chkstk_ms
+  3.67      1.86     0.09                             __gmpn_rshift
+  3.27      1.94     0.08                             __gmpn_sqr_basecase
+  2.45      2.00     0.06                             __gmpn_add_n
+  2.45      2.06     0.06                             __gmpz_add
+  2.45      2.12     0.06                             __gmpz_sub
+  2.04      2.17     0.05                             __gmpz_init_set
+  2.04      2.22     0.05                             __gmpz_realloc
+  1.63      2.26     0.04                             __gmpz_init
+  1.22      2.29     0.03                             __gmpn_mul_basecase
+  1.22      2.32     0.03                             __gmpz_cmp
+  1.22      2.35     0.03                             __gmpz_mul
+  0.82      2.37     0.02                             __gmp_default_allocate
+  0.82      2.39     0.02                             __gmpn_mul_n
+  0.82      2.41     0.02                             __gmpz_add_ui
+  0.82      2.43     0.02                             __gmpz_clear
+  0.41      2.44     0.01                             __gmpn_mul
+  0.41      2.45     0.01                             __gmpn_sub_n
+  0.00      2.45     0.00        1     0.00     0.00  brent(__gmp_expr<__mpz_struct [1], __mpz_struct [1]> const&)
+  0.00      2.45     0.00        1     0.00     0.00  __gmp_expr<__mpz_struct [1], __mpz_struct [1]>::__gmp_expr(char const*, int)
 
  %         the percentage of the total running time of the
 time       program used by this function.
@@ -64,98 +61,89 @@ name       the name of the function.  This is the minor sort
 		     Call graph (explanation follows)
 
 
-granularity: each sample hit covers 4 byte(s) for 0.23% of 4.44 seconds
+granularity: each sample hit covers 4 byte(s) for 0.41% of 2.45 seconds
 
 index % time    self  children    called     name
                                                  <spontaneous>
-[1]     17.6    0.78    0.00                 __gmpn_tdiv_qr [1]
+[1]     18.8    0.46    0.00                 __gmpn_tdiv_qr [1]
 -----------------------------------------------
                                                  <spontaneous>
-[2]     13.7    0.61    0.00                 __gmpn_sbpi1_div_qr [2]
+[2]     17.1    0.42    0.00                 __gmpn_sbpi1_div_qr [2]
 -----------------------------------------------
                                                  <spontaneous>
-[3]      7.4    0.33    0.00                 __gmpn_copyi [3]
+[3]     10.2    0.25    0.00                 __gmpn_copyi [3]
 -----------------------------------------------
                                                  <spontaneous>
-[4]      7.0    0.31    0.00                 __gmpn_submul_1 [4]
+[4]      7.8    0.19    0.00                 __gmpz_tdiv_r [4]
 -----------------------------------------------
                                                  <spontaneous>
-[5]      6.3    0.28    0.00                 __gmpn_lshift [5]
+[5]      5.3    0.13    0.00                 __gmpn_lshift [5]
 -----------------------------------------------
                                                  <spontaneous>
-[6]      5.2    0.23    0.00                 __gmpz_mul [6]
+[6]      4.9    0.12    0.00                 __gmpn_submul_1 [6]
 -----------------------------------------------
                                                  <spontaneous>
-[7]      4.7    0.21    0.00                 __gmpn_sqr_basecase [7]
+[7]      4.5    0.11    0.00                 _fu3___ZSt4cout [7]
 -----------------------------------------------
                                                  <spontaneous>
-[8]      4.1    0.18    0.00                 __gmpz_tdiv_r [8]
+[8]      3.7    0.09    0.00                 __chkstk_ms [8]
 -----------------------------------------------
                                                  <spontaneous>
-[9]      4.1    0.18    0.00                 _fu3___ZSt4cout [9]
+[9]      3.7    0.09    0.00                 __gmpn_rshift [9]
 -----------------------------------------------
                                                  <spontaneous>
-[10]     3.8    0.17    0.00                 __gmpz_sub [10]
+[10]     3.3    0.08    0.00                 __gmpn_sqr_basecase [10]
 -----------------------------------------------
                                                  <spontaneous>
-[11]     3.6    0.16    0.00                 __chkstk_ms [11]
+[11]     2.4    0.06    0.00                 __gmpn_add_n [11]
 -----------------------------------------------
                                                  <spontaneous>
-[12]     3.4    0.15    0.00                 __gmpn_rshift [12]
+[12]     2.4    0.06    0.00                 __gmpz_add [12]
 -----------------------------------------------
                                                  <spontaneous>
-[13]     2.5    0.11    0.00                 __gmpz_add [13]
+[13]     2.4    0.06    0.00                 __gmpz_sub [13]
 -----------------------------------------------
                                                  <spontaneous>
-[14]     2.3    0.10    0.00                 __gmpn_add_n [14]
+[14]     2.0    0.05    0.00                 __gmpz_init_set [14]
 -----------------------------------------------
                                                  <spontaneous>
-[15]     2.3    0.10    0.00                 __gmpz_add_ui [15]
+[15]     2.0    0.05    0.00                 __gmpz_realloc [15]
 -----------------------------------------------
                                                  <spontaneous>
-[16]     2.3    0.10    0.00                 __gmpz_clear [16]
+[16]     1.6    0.04    0.00                 __gmpz_init [16]
 -----------------------------------------------
                                                  <spontaneous>
-[17]     1.6    0.07    0.00                 __gmpn_mul_basecase [17]
+[17]     1.2    0.03    0.00                 __gmpn_mul_basecase [17]
 -----------------------------------------------
                                                  <spontaneous>
-[18]     1.4    0.06    0.00                 __gmpz_init_set [18]
+[18]     1.2    0.03    0.00                 __gmpz_cmp [18]
 -----------------------------------------------
                                                  <spontaneous>
-[19]     1.1    0.05    0.00                 __gmp_default_allocate [19]
+[19]     1.2    0.03    0.00                 __gmpz_mul [19]
 -----------------------------------------------
                                                  <spontaneous>
-[20]     1.1    0.05    0.00                 __gmpz_realloc [20]
+[20]     0.8    0.02    0.00                 __gmp_default_allocate [20]
 -----------------------------------------------
                                                  <spontaneous>
-[21]     0.9    0.04    0.00                 __gmpn_sub_n [21]
+[21]     0.8    0.02    0.00                 __gmpn_mul_n [21]
 -----------------------------------------------
                                                  <spontaneous>
-[22]     0.9    0.04    0.00                 __gmpz_init [22]
+[22]     0.8    0.02    0.00                 __gmpz_add_ui [22]
 -----------------------------------------------
                                                  <spontaneous>
-[23]     0.7    0.03    0.00                 __gmp_default_free [23]
+[23]     0.8    0.02    0.00                 __gmpz_clear [23]
 -----------------------------------------------
                                                  <spontaneous>
-[24]     0.7    0.03    0.00                 __gmpz_cmp [24]
+[24]     0.4    0.01    0.00                 __gmpn_mul [24]
 -----------------------------------------------
                                                  <spontaneous>
-[25]     0.5    0.02    0.00                 __gmp_default_reallocate [25]
------------------------------------------------
-                                                 <spontaneous>
-[26]     0.5    0.02    0.00                 __gmpn_sqr [26]
------------------------------------------------
-                                                 <spontaneous>
-[27]     0.5    0.02    0.00                 free [27]
------------------------------------------------
-                                                 <spontaneous>
-[28]     0.2    0.01    0.00                 __gmpn_mul [28]
+[25]     0.4    0.01    0.00                 __gmpn_sub_n [25]
 -----------------------------------------------
                 0.00    0.00       1/1           main [297]
-[30]     0.0    0.00    0.00       1         brent(__gmp_expr<__mpz_struct [1], __mpz_struct [1]> const&) [30]
+[27]     0.0    0.00    0.00       1         brent(__gmp_expr<__mpz_struct [1], __mpz_struct [1]> const&) [27]
 -----------------------------------------------
                 0.00    0.00       1/1           main [297]
-[31]     0.0    0.00    0.00       1         __gmp_expr<__mpz_struct [1], __mpz_struct [1]>::__gmp_expr(char const*, int) [31]
+[28]     0.0    0.00    0.00       1         __gmp_expr<__mpz_struct [1], __mpz_struct [1]>::__gmp_expr(char const*, int) [28]
 -----------------------------------------------
 
  This table describes the call tree of the program, and was sorted by
@@ -243,13 +231,12 @@ index % time    self  children    called     name
 
 Index by function name
 
-  [30] brent(__gmp_expr<__mpz_struct [1], __mpz_struct [1]> const&) [17] __gmpn_mul_basecase [16] __gmpz_clear
-  [31] __gmp_expr<__mpz_struct [1], __mpz_struct [1]>::__gmp_expr(char const*, int) [12] __gmpn_rshift [24] __gmpz_cmp
-  [11] __chkstk_ms             [2] __gmpn_sbpi1_div_qr    [22] __gmpz_init
-  [19] __gmp_default_allocate [26] __gmpn_sqr             [18] __gmpz_init_set
-  [23] __gmp_default_free      [7] __gmpn_sqr_basecase     [6] __gmpz_mul
-  [25] __gmp_default_reallocate [21] __gmpn_sub_n         [20] __gmpz_realloc
-  [14] __gmpn_add_n            [4] __gmpn_submul_1        [10] __gmpz_sub
-   [3] __gmpn_copyi            [1] __gmpn_tdiv_qr          [8] __gmpz_tdiv_r
-   [5] __gmpn_lshift          [13] __gmpz_add              [9] _fu3___ZSt4cout
-  [28] __gmpn_mul             [15] __gmpz_add_ui          [27] free
+  [27] brent(__gmp_expr<__mpz_struct [1], __mpz_struct [1]> const&) [21] __gmpn_mul_n [23] __gmpz_clear
+  [28] __gmp_expr<__mpz_struct [1], __mpz_struct [1]>::__gmp_expr(char const*, int) [9] __gmpn_rshift [18] __gmpz_cmp
+   [8] __chkstk_ms             [2] __gmpn_sbpi1_div_qr    [16] __gmpz_init
+  [20] __gmp_default_allocate [10] __gmpn_sqr_basecase    [14] __gmpz_init_set
+  [11] __gmpn_add_n           [25] __gmpn_sub_n           [19] __gmpz_mul
+   [3] __gmpn_copyi            [6] __gmpn_submul_1        [15] __gmpz_realloc
+   [5] __gmpn_lshift           [1] __gmpn_tdiv_qr         [13] __gmpz_sub
+  [24] __gmpn_mul             [12] __gmpz_add              [4] __gmpz_tdiv_r
+  [17] __gmpn_mul_basecase    [22] __gmpz_add_ui           [7] _fu3___ZSt4cout

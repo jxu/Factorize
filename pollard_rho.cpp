@@ -102,7 +102,8 @@ mpz_class brent(const mpz_class &N)
             func(ys, c, N);
             a = abs(x-ys);
             mpz_gcd(g.get_mpz_t(), a.get_mpz_t(), N.get_mpz_t());
-        } while (g == 1);
+        }
+        while (g == 1);
     }
     return g;
 }

@@ -1,0 +1,1 @@
+gprof qs.exe > qs_profile.txt
